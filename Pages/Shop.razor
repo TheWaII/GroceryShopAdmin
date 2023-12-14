@@ -1,0 +1,35 @@
+@page "/Shop"
+@using GroceryShopAdmin.Data
+@using Microsoft.EntityFrameworkCore
+@inject IDbContextFactory<GroceryShopDbContext> GroceryShopContextFactory;
+
+<link href="ShopPageStyle.css" rel="stylesheet"/>
+
+<h3>Shop</h3>
+<table class="table shop-table">
+    <thead>
+    <tr>
+        <th scope="col">Icon</th>
+        <th scope="col">Name</th>
+        <th scope="col">Price</th>
+        <th scope="col">Quantity Available</th>
+        <th scope="col">Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var product in _products)
+    {
+        <tr>
+            <td class="product-icon">
+                <img src="@GetImage(product)" height="60" width="60" alt="@product.Name"/>
+            </td>
+            <td>@product.Name</td>
+            <td>@product.Price</td>
+            <td>@product.Quantity</td>
+            <td>
+                <button class="btn btn-success" @onclick="() => BuyProduct(product)">Buy</button>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

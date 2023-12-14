@@ -1,0 +1,94 @@
+﻿@page "/"
+@using GroceryShopAdmin.Data
+@using Microsoft.EntityFrameworkCore
+@inject IDbContextFactory<GroceryShopDbContext> GroceryShopContextFactory;
+
+<PageTitle>Main</PageTitle>
+
+<link href="MainPageStyle.css" rel="stylesheet"/>
+
+<div class="container">
+    <div class="header">
+        <h3>Manage Database</h3>
+    </div>
+
+    <div class="main">
+        @if (ShowCreate)
+        {
+            <div class="form-container">
+                <label for="lblCategory">Category:</label>
+                <select class="form-control" name="sCategory" id="lblCategory" @bind="@NewProduct!.CategoryId">
+                    @foreach (var (category, index) in _categories.Select((c, index) => (c, index + 1)))
+                    {
+                        <option value="@index">@category.Name</option>
+                    }
+                </select>
+
+                <label for="lblName">Name:</label>
+                <input class="form-control" id="lblName" @bind="NewProduct!.Name"/>
+
+                <label for="lblPrice">Price:</label>
+                <input class="form-control" id="lblPrice" @bind="NewProduct!.Price"/>
+
+                <button class="btn btn-success" @onclick="AddNewProduct">Add Product</button>
+            </div>
+        }
+        else
+        {
+            <button class="btn btn-primary" @onclick="ShowCreateForm">Add a new product</button>
+
+            @if (_products.Count > 0)
+            {
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th scope="col">Category</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Price</th>
+                        <th scope="col">Quantity</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var product in _products)
+                    {
+                        <tr>
+                            <td>@GetCategory(product)</td>
+                            <td>@product.Name</td>
+                            <td>@product.Price</td>
+                            <td>@product.Quantity</td>
+                            <td>
+                                @if (!ShowEdit || ProductToUpdate is null || ProductToUpdate.ProductId != product.ProductId)
+                                {
+                                    <button class="btn btn-primary" @onclick="() => ShowUpdateForm(product)">
+                                        Edit
+                                    </button>
+                                }
+                                else
+                                {
+                                    <div>
+                                        <select class="form-control" name="sCategory" id="lblCategory" @bind="@ProductToUpdate!.CategoryId">
+                                            @foreach (var (category, index) in _categories.Select((c, index) => (c, index + 1)))
+                                            {
+                                                <option value="@index">@category.Name</option>
+                                            }
+                                        </select>
+
+                                        <input class="form-control" id="FirstName" name="Name" type="text" @bind="ProductToUpdate.Name"/>
+                                        <input class="form-control" id="FirstName" name="Name" type="text" @bind="ProductToUpdate.Price"/>
+
+                                        <button class="btn btn-success" @onclick="@UpdateProduct">Save</button>
+                                    </div>
+                                }
+                                <button class="btn btn-danger" @onclick="() => DeleteProduct(product)">
+                                    Delete
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            }
+        }
+    </div>
+</div>
